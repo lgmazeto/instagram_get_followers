@@ -8,11 +8,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait 
 
 
-
 class InstagramBot():
    def __init__(self, email, password):
-    self.driveProfile = webdriver.ChromeOptions()
-    self.driveProfile.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
     self.service = Service(executable_path=ChromeDriverManager().install())
     self.driver = webdriver.Chrome(service=self.service)
     self.email = email
@@ -21,8 +18,7 @@ class InstagramBot():
 
    def signIn(self):
     self.driver.get('https://www.instagram.com/login/')
-    sleep(2)
-    emailInput = self.driver.find_elements(By.CSS_SELECTOR, 'form input')[0]
+    emailInput = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'form input')))[0]
     passwordInput = self.driver.find_elements(By.CSS_SELECTOR, 'form input')[1]
     emailInput.send_keys(self.email)
     passwordInput.send_keys(self.password)
@@ -32,37 +28,54 @@ class InstagramBot():
 
    def followWithUsername(self, username):
     self.driver.get('https://www.instagram.com/' + username + '/')
-    sleep(5)
-    flw_btn = self.driver.find_elements(By.CSS_SELECTOR, 'button')
-    for f in flw_btn:
-        if f.text == 'Seguir':
+    flw = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'button')))
+    for f in flw:
+        if f.text == 'Seguir' or f.text == 'Seguir de volta':
             f.click()
-            break     
+            break
     sleep(2)
 
 
    def unfollowWithUsername(self, username):
     self.driver.get('https://www.instagram.com/' + username + '/')
-    sleep(5)
-    popup = self.driver.find_elements(By.CLASS_NAME, 'button')
+    popup = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'button')))[1]
+    popup.click()
+    unflw_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'button')))
+    for f in unflw_btn:
+        if f.text == 'Deixar de seguir':
+            f.click()
+            sleep(2)
+            break     
 
+    #em processo
+   def getUserFollowers(self, username):
+    self.driver.get('https://www.instagram.com/' + username + '/')
+    followers = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'ul li a')))
+    followers.click()
+    sleep(20)
 
-
-   #def getUserFollowers():
 
    def closeBrowser(self):
     self.driver.close()
 
 
-   #def __exit__():
+   def __exit__(self, exc_type, exc_value, traceback):
+     self.closeBrowser()
+
 
 def main():
     print('ola mundo!')
     driver = InstagramBot('', '')
     driver.signIn()
+    
     #driver.followWithUsername('guilhermemazeto')
-    driver.unfollowWithUsername('guilhermemazeto')
+    
+    driver.getUserFollowers('guilhermemazeto')
+    
+    #driver.unfollowWithUsername('guilhermemazeto')
+    
     driver.closeBrowser()
+
 
 if __name__ == '__main__':
     main()
