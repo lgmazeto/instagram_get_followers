@@ -1,2 +1,2 @@
-# bot_to_get_followers
-Simple boot to get followers.
+# instagram_get_followers
+A simple boot to get followers on instagram.
