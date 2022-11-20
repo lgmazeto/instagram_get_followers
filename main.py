@@ -47,34 +47,37 @@ class InstagramBot():
             sleep(2)
             break     
 
-    #em processo
-   def getUserFollowers(self, username):
+
+   def getUserFollowers(self, username) -> list:
     max = 20
     self.driver.get('https://www.instagram.com/' + username + '/')
     followers_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'ul li a')))
     followers_btn.click()
     sleep(2)
-    popup = self.driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[2]')
-    #numberOfFollowersInList = len(popup.find_elements(By.CSS_SELECTOR, '_ab8w  _ab94 _ab97 _ab9f _ab9k _ab9p  _ab9- _aba8 _abcm'))
-    #print(numberOfFollowersInList)
-    
-    #_=0
-    #while (_ < max):
-    #        self.driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", popup)
-    #        _ += 1
-    #        print(_)
-    #        sleep(2)
+    popup = self.driver.find_element(By.CSS_SELECTOR, 'div[role=\'dialog\']')
+    numberOfFollowersInList = len(popup.find_elements(By.CSS_SELECTOR, 'div[aria-labelledby]'))
+    print(numberOfFollowersInList)
+
+    scrollBar = self.driver.find_element(By.CLASS_NAME, '_aano')
+    while (numberOfFollowersInList < max):
+        self.driver.execute_script('arguments[0].scrollBy(0,arguments[0].scrollHeight)', scrollBar)
+        sleep(2)
+        numberOfFollowersInList = len(popup.find_elements(By.CSS_SELECTOR, 'div[aria-labelledby]'))
+        print(numberOfFollowersInList)
+
+    followers = []
+    for f in popup.find_elements(By.CSS_SELECTOR, 'div[aria-labelledby]'):
+        followerLink = f.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
+        followers.append(followerLink.split('/')[-2])
+
+    return followers
+
+   # em construção 
+   def likePost(self):
+    post_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'v1Nh3')))
+    post_btn.click()
 
 
-    #followers = []
-    #for user in followersList.find_element(By.CSS_SELECTOR, 'li'):
-    #    userLink = user.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
-    #    print(userLink)
-    #    followers.append(userLink)
-    #    if (len(followers) == max):
-    #break
-
-   
    def closeBrowser(self):
     self.driver.close()
 
@@ -87,9 +90,12 @@ def main():
     print('ola mundo!')
     driver = InstagramBot('processoszbn@gmail.com', '')
     driver.signIn()
+    followers = driver.getUserFollowers('guilhermemazeto')
+    print(followers)
     #driver.followWithUsername('guilhermemazeto')
-    driver.getUserFollowers('guilhermemazeto')
+    #driver.likePost()
     #driver.unfollowWithUsername('guilhermemazeto')
+    
     driver.closeBrowser()
 
 
