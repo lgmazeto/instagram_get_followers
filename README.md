@@ -1,7 +1,7 @@
 # instagram_get_followers
 A simple bot to get followers on instagram.
 
-###My notes:
+# My notes:
 
 Issues <br>
 We need to consider that instagram allows follow 30 users per hour, and 500 users for day.<br>
