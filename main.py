@@ -88,7 +88,7 @@ class InstagramBot():
 
 def main():
     print('ola mundo!')
-    driver = InstagramBot('processoszbn@gmail.com', '')
+    driver = InstagramBot('', '')
     driver.signIn()
     followers = driver.getUserFollowers('guilhermemazeto')
     print(followers)
