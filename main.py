@@ -48,30 +48,6 @@ class InstagramBot():
             break     
 
 
-   def getUserFollowers(self, username) -> list:
-    max = 20
-    self.driver.get('https://www.instagram.com/' + username + '/')
-    followers_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'ul li a')))
-    followers_btn.click()
-    sleep(2)
-    popup = self.driver.find_element(By.CSS_SELECTOR, 'div[role=\'dialog\']')
-    numberOfFollowersInList = len(popup.find_elements(By.CSS_SELECTOR, 'div[aria-labelledby]'))
-    print(numberOfFollowersInList)
-
-    scrollBar = self.driver.find_element(By.CLASS_NAME, '_aano')
-    while (numberOfFollowersInList < max):
-        self.driver.execute_script('arguments[0].scrollBy(0,arguments[0].scrollHeight)', scrollBar)
-        sleep(2)
-        numberOfFollowersInList = len(popup.find_elements(By.CSS_SELECTOR, 'div[aria-labelledby]'))
-        print(numberOfFollowersInList)
-
-    followers = []
-    for f in popup.find_elements(By.CSS_SELECTOR, 'div[aria-labelledby]'):
-        followerLink = f.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
-        followers.append(followerLink.split('/')[-2])
-
-    return followers
-
    # em construção 
    def likePost(self):
     post_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'v1Nh3')))
